@@ -1,13 +1,12 @@
 from fastapi import FastAPI
 from api.routes import router
-from core.db_init import init_db
+from core.db_init import init_tables
 
 app = FastAPI(title="Kasparro Backend API")
 
-# Initialize DB (creates tables if missing)
+# Create DB tables at startup
 @app.on_event("startup")
 def startup_event():
-    init_db()
+    init_tables()
 
-# Register routes
 app.include_router(router)
