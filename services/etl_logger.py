@@ -3,17 +3,34 @@ from sqlalchemy.sql import text
 from core.database import SessionLocal
 
 
+def ensure_etl_table():
+    session = SessionLocal()
+    session.execute(
+        text("""
+        CREATE TABLE IF NOT EXISTS etl_runs (
+            id SERIAL PRIMARY KEY,
+            run_id UUID UNIQUE NOT NULL,
+            source TEXT NOT NULL,
+            status TEXT NOT NULL,
+            started_at TIMESTAMP DEFAULT now(),
+            finished_at TIMESTAMP
+        )
+        """)
+    )
+    session.commit()
+    session.close()
+
+
 def start_run(source: str) -> str:
-    """
-    Create a new ETL run entry and return run_id
-    """
+    ensure_etl_table()
+
     run_id = str(uuid.uuid4())
     session = SessionLocal()
 
     session.execute(
         text("""
             INSERT INTO etl_runs (run_id, source, status)
-            VALUES (:run_id, :source, 'success')
+            VALUES (:run_id, :source, 'running')
         """),
         {"run_id": run_id, "source": source}
     )
@@ -24,9 +41,6 @@ def start_run(source: str) -> str:
 
 
 def end_run(run_id: str, status: str):
-    """
-    Mark ETL run as success or failure
-    """
     session = SessionLocal()
 
     session.execute(
