@@ -1,6 +1,6 @@
 from ingestion.coingecko import ingest_coingecko
 from ingestion.csv_ingest import ingest_csv_prices
-from ingestion.csv_quirky import ingest_csv_quirky
+from ingestion.csv_quirky_ingest import ingest_csv_quirky
 from ingestion.unify import unify_data
 
 
