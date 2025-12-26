@@ -1,4 +1,4 @@
-from services.db_init import init_tables
+from core.db_init import init_tables
 from services.etl_logger import start_run, end_run
 
 def run_all():
