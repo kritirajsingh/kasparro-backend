@@ -3,7 +3,14 @@ from fastapi import APIRouter
 from sqlalchemy.sql import text
 from core.database import SessionLocal
 
-router = APIRouter()   # ✅ THIS WAS MISSING
+router = APIRouter()
+
+@router.get("/")
+def root():
+    return {
+        "service": "Kasparro Backend API",
+        "endpoints": ["/stats", "/data"]
+    }
 
 @router.get("/stats")
 def get_stats():
@@ -23,7 +30,6 @@ def get_stats():
         }
     finally:
         session.close()
-
 
 @router.get("/data")
 def get_data(limit: int = 20):
