@@ -3,31 +3,26 @@ from ingestion.csv_ingest import ingest_csv_prices
 from ingestion.csv_quirky_ingest import ingest_csv_quirky
 from ingestion.unify import unify_data
 
-from services.etl_logger import log_etl_run
+from services.etl_logger import start_run, end_run
 
 
 def run_all():
-    # -------- CoinGecko --------
-    try:
-        ingest_coingecko()
-        log_etl_run(source="coingecko", status="success")
-    except Exception as e:
-        log_etl_run(source="coingecko", status="failure")
-        print(f"[WARN] CoinGecko skipped: {e}")
+    run_id = start_run(source="all")
 
-    # -------- CSV + Unification --------
     try:
+        try:
+            ingest_coingecko()
+        except Exception as e:
+            print(f"[WARN] CoinGecko skipped: {e}")
+
         ingest_csv_prices()
-        log_etl_run(source="csv", status="success")
-
         ingest_csv_quirky()
-        log_etl_run(source="csv_quirky", status="success")
-
         unify_data()
-        log_etl_run(source="unify", status="success")
+
+        end_run(run_id, status="success")
 
     except Exception as e:
-        log_etl_run(source="etl_pipeline", status="failure")
+        end_run(run_id, status="failure")
         print(f"[ERROR] ETL failure: {e}")
 
 
